@@ -4,8 +4,8 @@ RUN pip install poetry
 
 ENV POETRY_VIRTUALENVS_CREATE=false
 
-COPY ../api/pyproject.toml /app/pyproject.toml
-COPY ../api/poetry.lock /app/poetry.lock
+COPY ../pyproject.toml /app/pyproject.toml
+COPY ../poetry.lock /app/poetry.lock
 COPY ../api /app
 
 WORKDIR /app/aboba
