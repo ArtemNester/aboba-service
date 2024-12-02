@@ -13,7 +13,7 @@ const Footer = () => {
         position: 'relative',
         bottom: 0,
         width: '100%',
-        marginTop: 'auto',
+        marginTop: 'auto', 
         textAlign: 'center',
       }}
     >
