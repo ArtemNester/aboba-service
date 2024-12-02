@@ -23,3 +23,15 @@ code {
     background-position: 200% 0;
   }
 }
+
+@keyframes frame-animation {
+  0% {
+      border-color: #9c27b0;
+  }
+  50% {
+      border-color: #673ab7;
+  }
+  100% {
+      border-color: #9c27b0;
+  }
+}
