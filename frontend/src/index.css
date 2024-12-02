@@ -11,3 +11,15 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+@keyframes gradient-animation {
+  0% {
+    background-position: 200% 0;
+  }
+  50% {
+    background-position: 0 100%;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
