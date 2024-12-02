@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
 import Header from './components/Header';
+import Footer from './components/Footer';
 
 const App = () => {
   return (
@@ -14,6 +15,7 @@ const App = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
       </Routes>
+      <Footer/>
       <ToastContainer
           position="top-right"
           autoClose={5000}
