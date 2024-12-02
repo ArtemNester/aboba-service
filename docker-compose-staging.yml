@@ -1,0 +1,56 @@
+version: '3.8'
+services:
+  aboba_db_host:
+    container_name: aboba_db_host
+    restart: always
+    shm_size: 128mb
+    image: postgres:16.2-alpine
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_PORT=${DB_PORT}
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    container_name: api
+    restart: always
+    build:
+      context: .
+      dockerfile: .docker/dev/api/Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.staging
+    depends_on:
+      aboba_db_host:
+        condition: service_healthy
+    volumes:
+      - static_volume:/app/aboba/staticfiles
+      - media_volume:/app/aboba/media
+
+  nginx:
+    container_name: nginx
+    build:
+      context: .docker/dev/nginx
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - static_volume:/app/aboba/staticfiles
+      - media_volume:/app/aboba/media
+
+
+volumes:
+  static_volume:
+  media_volume:
+  pgdata:
