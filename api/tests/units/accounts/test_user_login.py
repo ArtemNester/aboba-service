@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch
 
-from api.aboba.accounts.views import LoginView
+from accounts.views import LoginView
 from django.test import RequestFactory
 from rest_framework import status
 from rest_framework.response import Response
