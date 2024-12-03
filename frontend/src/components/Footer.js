@@ -13,7 +13,7 @@ const Footer = () => {
         position: 'relative',
         bottom: 0,
         width: '100%',
-        marginTop: 'auto', 
+        marginTop: 'auto',
         textAlign: 'center',
       }}
     >
@@ -21,8 +21,8 @@ const Footer = () => {
         variant={isMobile ? 'body2' : 'h6'}
         color="inherit"
         sx={{
-          background: 'linear-gradient(to right, #9b59b6, #8e44ad, #e74c3c)', 
-          WebkitBackgroundClip: 'text', 
+          background: 'linear-gradient(to right, #9b59b6, #8e44ad, #e74c3c)',
+          WebkitBackgroundClip: 'text',
           color: 'transparent',
           fontWeight: 'bold',
           backgroundSize: '200% auto',

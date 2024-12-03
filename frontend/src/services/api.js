@@ -1,13 +1,17 @@
-import axios from 'axios'
+import axios from 'axios';
+import config from '../utils/config';
 
 const api = axios.create({
-    baseURL: process.env.REACT_APP_BACKEND_URL  || 'http://localhost/api/v1',
+  baseURL: `${config.backendURL}`,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 export const login = async (email, password) => {
-    return await api.post('/accounts/login', {email, password});
+  return await api.post('/accounts/login', { email, password });
 };
 
 export const register = async (username, email, password) => {
-    return await api.post('/accounts/register', {email, password});
+  return await api.post('/accounts/register', { email, password });
 };

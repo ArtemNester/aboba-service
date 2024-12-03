@@ -1,7 +1,20 @@
 import React, { useState } from 'react';
-import { AppBar, Toolbar, IconButton, Typography, Button, Drawer, List, ListItem, ListItemText, useMediaQuery, useTheme } from '@mui/material';
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+  Button,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  useMediaQuery,
+  useTheme,
+  Link,
+} from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 
 const Header = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -16,7 +29,19 @@ const Header = () => {
     <AppBar position="sticky" sx={{ background: 'linear-gradient(to right, #2e6783, #607d8b)' }}>
       <Toolbar>
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
-          Aboba
+          <Link
+            component={RouterLink}
+            to="/"
+            sx={{
+              textDecoration: 'none',
+              color: 'white',
+              fontWeight: 'bold',
+              fontSize: { xs: '1.5rem', sm: '2rem' },
+              position: 'relative',
+            }}
+          >
+            Aboba
+          </Link>
         </Typography>
 
         {isMobile ? (
@@ -25,10 +50,10 @@ const Header = () => {
           </IconButton>
         ) : (
           <div>
-            <Button color="inherit" component={Link} to="/login">
+            <Button color="inherit" component={RouterLink} to="/login">
               Войти
             </Button>
-            <Button color="inherit" component={Link} to="/register">
+            <Button color="inherit" component={RouterLink} to="/register">
               Регистрация
             </Button>
           </div>
@@ -38,10 +63,10 @@ const Header = () => {
       {/* Mobile Drawer */}
       <Drawer anchor="left" open={openDrawer} onClose={toggleDrawer(false)}>
         <List>
-          <ListItem button component={Link} to="/login">
+          <ListItem button component={RouterLink} to="/login">
             <ListItemText primary="Войти" />
           </ListItem>
-          <ListItem button component={Link} to="/register">
+          <ListItem button component={RouterLink} to="/register">
             <ListItemText primary="Регистрация" />
           </ListItem>
         </List>
