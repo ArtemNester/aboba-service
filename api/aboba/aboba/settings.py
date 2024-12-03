@@ -2,19 +2,19 @@ import os.path
 from datetime import timedelta
 from pathlib import Path
 
-import environ
+from config import config
 
+
+config.load()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-env = environ.Env()
 
-DEBUG = env.bool('DEBUG', False)
-SECRET_KEY = 'ABOBA'
+DEBUG = config.DEBUG
+SECRET_KEY = config.SECRET_KEY
 
 ALLOWED_HOSTS = ["*"]
 
-env.read_env(env.str("../../../../", ".env.staging"))
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -59,12 +59,12 @@ WSGI_APPLICATION = 'aboba.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env.str('DB_NAME', 'abobadb'),
-        'USER': env.str('DB_USER', 'abobauser'),
-        'PASSWORD': env.str('DB_PASSWORD', ''),
-        'HOST': env.str('DB_HOST', 'localhost'),
-        'PORT': env.str('DB_PORT', ''),
+        'ENGINE': config.ENGINE,
+        'NAME': config.NAME,
+        'USER': config.USER,
+        'PASSWORD': config.PASSWORD,
+        'HOST': config.HOST,
+        'PORT': config.PORT,
     },
 }
 
@@ -104,7 +104,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
-
 
 # REST
 REST_FRAMEWORK = {

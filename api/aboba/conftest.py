@@ -1,5 +1,9 @@
 import django
+from api.aboba import config
 from django.conf import settings
+
+
+config.load()
 
 
 def pytest_configure():
@@ -15,7 +19,7 @@ def pytest_configure():
         ],
         DATABASES={
             'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
+                'ENGINE': 'django.db.backends.sqlite3',  # noqa
                 'NAME': ':memory:',
             },
         },
