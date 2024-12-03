@@ -2,7 +2,7 @@ import os.path
 from datetime import timedelta
 from pathlib import Path
 
-from config import config
+import config
 
 
 config.load()
