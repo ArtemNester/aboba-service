@@ -1,5 +1,5 @@
 import django
-from aboba import config
+from config import config
 from django.conf import settings
 
 
