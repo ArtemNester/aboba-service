@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   AppBar,
   Toolbar,
@@ -15,14 +15,32 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link as RouterLink } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { logoutUser } from '../services/api';
+import { toast } from 'react-toastify';
+import { logout as logoutAction } from '../store/authSlice';
 
 const Header = () => {
-  const [openDrawer, setOpenDrawer] = useState(false);
+  const dispatch = useDispatch();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
+  const { isAuthenticated } = useSelector((state) => state.auth);
+
+  const [openDrawer, setOpenDrawer] = React.useState(false);
+
   const toggleDrawer = (open) => () => {
     setOpenDrawer(open);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      dispatch(logoutAction());
+      toast.success('Вы успешно вышли из системы!');
+    } catch (err) {
+      toast.error('Ошибка при выходе.');
+    }
   };
 
   return (
@@ -32,13 +50,7 @@ const Header = () => {
           <Link
             component={RouterLink}
             to="/"
-            sx={{
-              textDecoration: 'none',
-              color: 'white',
-              fontWeight: 'bold',
-              fontSize: { xs: '1.5rem', sm: '2rem' },
-              position: 'relative',
-            }}
+            sx={{ textDecoration: 'none', color: 'white', fontWeight: 'bold' }}
           >
             Aboba
           </Link>
@@ -50,17 +62,24 @@ const Header = () => {
           </IconButton>
         ) : (
           <div>
-            <Button color="inherit" component={RouterLink} to="/login">
-              Войти
-            </Button>
-            <Button color="inherit" component={RouterLink} to="/register">
-              Регистрация
-            </Button>
+            {isAuthenticated ? (
+              <Button color="inherit" onClick={handleLogout}>
+                Выйти
+              </Button>
+            ) : (
+              <>
+                <Button color="inherit" component={RouterLink} to="/login">
+                  Войти
+                </Button>
+                <Button color="inherit" component={RouterLink} to="/register">
+                  Регистрация
+                </Button>
+              </>
+            )}
           </div>
         )}
       </Toolbar>
 
-      {/* Mobile Drawer */}
       <Drawer anchor="left" open={openDrawer} onClose={toggleDrawer(false)}>
         <List>
           <ListItem button component={RouterLink} to="/login">

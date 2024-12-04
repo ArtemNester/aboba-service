@@ -2,21 +2,24 @@ import React, { useState } from 'react';
 import { TextField, Button, Box, Typography, Container } from '@mui/material';
 import { register } from '../services/api';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import { setToken } from '../utils/tokenManager';
 
 const RegisterPage = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [password1, setPassword1] = useState('');
+  const [password2, setPassword2] = useState('');
+  const navigate = useNavigate();
 
   const handlerRegister = async () => {
-    if (password !== confirmPassword) {
-      toast.error('Пароли не совпадают.');
-      return;
-    }
     try {
-      const response = await register(username, email, password);
-      if (response.status === 201) toast.success('Вы успешно зарегистрировались!');
+      const response = await register(username, email, password1, password2);
+      if (response.status === 201) {
+        setToken(response);
+        toast.success('Вы успешно зарегистрировались!');
+        navigate('/');
+      }
     } catch (err) {
       if (err.response && err.response.status === 400) toast.error('Такой email уже существует!');
       else toast.error('Ошибка регистрации. Попробуйте ещё раз.');
@@ -75,8 +78,8 @@ const RegisterPage = () => {
             fullWidth
             variant="outlined"
             margin="normal"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={password1}
+            onChange={(e) => setPassword1(e.target.value)}
           />
           <TextField
             label="Подтвердите пароль"
@@ -84,8 +87,8 @@ const RegisterPage = () => {
             fullWidth
             variant="outlined"
             margin="normal"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            value={password2}
+            onChange={(e) => setPassword2(e.target.value)}
           />
           <Button variant="contained" color="primary" onClick={handlerRegister}>
             зарегистрироваться

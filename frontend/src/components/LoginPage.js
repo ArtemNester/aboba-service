@@ -2,17 +2,24 @@ import React, { useState } from 'react';
 import { TextField, Button, Box, Typography, Container, CircularProgress } from '@mui/material';
 import { toast } from 'react-toastify';
 import { login } from '../services/api';
+import { useNavigate } from 'react-router-dom';
+import { setToken } from '../utils/tokenManager';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
     setLoading(true);
     try {
       const response = await login(email, password);
-      if (response.status === 200) toast.success('Вы успешно вошли!');
+      if (response.status === 200) {
+        setToken(response);
+        toast.success('Вы успешно вошли!');
+        navigate('/');
+      }
     } catch (err) {
       if (err.response && err.response.status >= 400)
         toast.error('Неправильный логин или пароль. Попробуйте ещё раз.');
