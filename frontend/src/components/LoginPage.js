@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { login } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import { setToken } from '../utils/tokenManager';
+import PasswordInput from './Inputs/Password/PasswordInput';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -68,15 +69,10 @@ const LoginPage = () => {
             onChange={(e) => setEmail(e.target.value)}
             disabled={loading}
           />
-          <TextField
+          <PasswordInput
             label="Пароль"
-            type="password"
-            fullWidth
-            variant="outlined"
-            margin="normal"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            disabled={loading}
           />
           <Button
             variant="contained"

@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { TextField, Button, Box, Typography, Container } from '@mui/material';
 import { register } from '../services/api';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
 import { setToken } from '../utils/tokenManager';
+import { useNavigate } from 'react-router-dom';
+import PasswordInput from './Inputs/Password/PasswordInput';
 
 const RegisterPage = () => {
   const [username, setUsername] = useState('');
@@ -72,21 +73,13 @@ const RegisterPage = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          <TextField
+          <PasswordInput
             label="Пароль"
-            type="password"
-            fullWidth
-            variant="outlined"
-            margin="normal"
             value={password1}
             onChange={(e) => setPassword1(e.target.value)}
           />
-          <TextField
+          <PasswordInput
             label="Подтвердите пароль"
-            type="password"
-            fullWidth
-            variant="outlined"
-            margin="normal"
             value={password2}
             onChange={(e) => setPassword2(e.target.value)}
           />
