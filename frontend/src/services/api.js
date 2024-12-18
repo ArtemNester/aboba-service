@@ -32,7 +32,7 @@ api.interceptors.response.use(
 
       if (refreshToken) {
         try {
-          const response = await axios.post(`${config.backendURL}/accounts/refresh`, {
+          const response = await axios.post(`${config.backendURL}/accounts/refresh/`, {
             refresh_token: refreshToken,
           });
 
@@ -54,7 +54,7 @@ api.interceptors.response.use(
 );
 
 export const login = async (email, password) => {
-  const response = await api.post('/accounts/login', { email, password });
+  const response = await api.post('/accounts/login/', { email, password });
   const { access, refresh } = response.data;
 
   store.dispatch(setCredentials({ access, refresh }));
@@ -63,7 +63,7 @@ export const login = async (email, password) => {
 };
 
 export const register = async (username, email, password1, password2) => {
-  const response = await api.post('/accounts/register', {
+  const response = await api.post('/accounts/register/', {
     username,
     email,
     password1,
@@ -84,7 +84,7 @@ export const logoutUser = async () => {
       throw new Error('No refresh token available.');
     }
 
-    const response = await api.post('/accounts/logout', {
+    const response = await api.post('/accounts/logout/', {
       refresh: refreshToken,
     });
 

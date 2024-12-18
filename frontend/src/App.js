@@ -7,6 +7,8 @@ import RegisterPage from './components/RegisterPage';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { Box } from '@mui/material';
+import Main from './components/Main';
+import UploadMeme from './components/UploadMeme';
 
 const App = () => {
   return (
@@ -17,6 +19,8 @@ const App = () => {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/" element={<Main />} />
+            <Route path="/upload" element={<UploadMeme />} />
           </Routes>
         </Box>
         <Footer />
