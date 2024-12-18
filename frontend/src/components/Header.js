@@ -63,9 +63,14 @@ const Header = () => {
         ) : (
           <div>
             {isAuthenticated ? (
-              <Button color="inherit" onClick={handleLogout}>
-                Выйти
-              </Button>
+              <>
+                <Button color="inherit" component={RouterLink} to="/upload">
+                  Загрузить
+                </Button>
+                <Button color="inherit" onClick={handleLogout}>
+                  Выйти
+                </Button>
+              </>
             ) : (
               <>
                 <Button color="inherit" component={RouterLink} to="/login">
@@ -82,6 +87,9 @@ const Header = () => {
 
       <Drawer anchor="left" open={openDrawer} onClose={toggleDrawer(false)}>
         <List>
+          <ListItem button component={RouterLink} to="/upload">
+            <ListItemText primary="Загрузить" />
+          </ListItem>
           <ListItem button component={RouterLink} to="/login">
             <ListItemText primary="Войти" />
           </ListItem>
