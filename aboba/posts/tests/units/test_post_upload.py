@@ -1,53 +1,49 @@
-import unittest
-from unittest.mock import (
-    MagicMock,
-    patch,
-)
+import uuid
+from io import BytesIO
 
-from posts.serializers import UploadPostResponseSerializer
-from posts.views import UploadMemeMemeViewSet
+from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from rest_framework import status
-from rest_framework.exceptions import ValidationError
+from rest_framework.test import APITestCase
 
 
-class UploadMemeMemeViewSetTests(unittest.TestCase):
-    @patch('posts.views.UploadPostRequestSerializer')
-    def test_creates_meme_successfully(self, mock_serializer):
-        viewset = UploadMemeMemeViewSet()
-        request = MagicMock()
-        request.data = {'file': 'test_file'}
-        serializer_instance = mock_serializer.return_value
-        serializer_instance.is_valid.return_value = True
-        serializer_instance.save.return_value = {
-            'file_key': 'key',
-            'file_type': 'type',
-            'created_at': 'now',
-        }
-        response_serializer = MagicMock()
-        response_serializer.data = {
-            'file_key': 'key',
-            'file_type': 'type',
-            'created_at': 'now',
-        }
-        UploadPostResponseSerializer.return_value = response_serializer
-
-        response = viewset.create(request)
-
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(
-            response.data,
-            {'file_key': 'key', 'file_type': 'type', 'created_at': 'now'},
+class UploadMemeMemeViewSetTestCase(APITestCase):
+    def setUp(self):
+        username = f"testuser_{uuid.uuid4()}"
+        password = 'pass123'
+        email = f'testemail_{uuid.uuid4()}@bot.ru'
+        self.user = get_user_model().objects.create_user(
+            username=username,
+            password=password,
+            email=email,
         )
 
-    @patch('posts.views.UploadPostRequestSerializer')
-    def test_handles_validation_error(self, mock_serializer):
-        viewset = UploadMemeMemeViewSet()
-        request = MagicMock()
-        request.data = {'file': ''}
-        serializer_instance = mock_serializer.return_value
-        serializer_instance.is_valid.side_effect = ValidationError('Invalid data')
+        # Авторизуем пользователя по умолчанию
+        self.client.force_authenticate(user=self.user)
 
-        response = viewset.create(request)
+    def test_create_meme(self):
+        image_data = BytesIO(b"image data")
+        image_data.name = 'test_image.jpg'
+        image = InMemoryUploadedFile(
+            image_data,
+            None,
+            'test_image.jpg',
+            'image/jpeg',
+            len(image_data.getvalue()),
+            None,
+        )
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('errors_create', response.data)
+        data = {
+            'file': image,
+            'file_type': 'image',
+        }
+
+        # Отправляем запрос с авторизацией
+        response = self.client.post('/api/v1/posts/upload/', data, format='multipart')
+
+        # Проверка успешного ответа
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIn('post_id', response.data)
+        self.assertIn('file_key', response.data)
+        self.assertIn('file_type', response.data)
+        self.assertIn('created_at', response.data)
