@@ -9,6 +9,7 @@ import Footer from './components/Footer';
 import { Box } from '@mui/material';
 import Main from './components/Main';
 import UploadMeme from './components/UploadMeme';
+import Comments from './components/Comments';
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/" element={<Main />} />
             <Route path="/upload" element={<UploadMeme />} />
+            <Route path="/posts/:postId" element={<Comments />} />
           </Routes>
         </Box>
         <Footer />
