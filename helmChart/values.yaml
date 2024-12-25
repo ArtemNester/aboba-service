@@ -1,0 +1,47 @@
+frontend:
+  replicaCount: 1
+  image:
+    repository: nginx
+    tag: latest
+  service:
+    type: ClusterIP
+    port: 80
+
+backend:
+  replicaCount: 1
+  image:
+    repository: kerriganxd/backend:v1.0
+    tag: latest
+  service:
+    type: ClusterIP
+    port: 8000
+
+minio:
+  replicaCount: 1
+  image:
+    repository: minio/minio
+    tag: latest
+  accessKey: minioaccesskey
+  secretKey: miniosecretkey
+
+percona_db_mysql:
+  replicaCount: 1
+  image:
+    repository: percona/percona-server
+    tag: latest
+  rootPassword: root_password
+  username: myuser
+  password: mypassword
+  database: mydb
+  service:
+    type: ClusterIP
+    port: 3306
+  persistence:
+    enabled: true
+    storageClass: "standard"
+    size: 5Gi
+
+ingress:
+  enabled: true
+  hostname: st.aboba
+  annotations: {}
