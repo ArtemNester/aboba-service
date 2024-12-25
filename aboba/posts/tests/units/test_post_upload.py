@@ -1,5 +1,6 @@
 import uuid
 from io import BytesIO
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -18,10 +19,11 @@ class UploadMemeMemeViewSetTestCase(APITestCase):
             email=email,
         )
 
-        # Авторизуем пользователя по умолчанию
         self.client.force_authenticate(user=self.user)
 
-    def test_create_meme(self):
+    @patch('posts.serializers.upload_media_to_s3')
+    def test_create_meme(self, mock_upload):
+        # Создание изображения для загрузки
         image_data = BytesIO(b"image data")
         image_data.name = 'test_image.jpg'
         image = InMemoryUploadedFile(
@@ -38,7 +40,6 @@ class UploadMemeMemeViewSetTestCase(APITestCase):
             'file_type': 'image',
         }
 
-        # Отправляем запрос с авторизацией
         response = self.client.post('/api/v1/posts/upload/', data, format='multipart')
 
         # Проверка успешного ответа
