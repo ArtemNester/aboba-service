@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: percona-deployment
+  labels:
+    app: percona
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: percona
+  template:
+    metadata:
+      labels:
+        app: percona
+    spec:
+      containers:
+        - name: percona
+          image: percona/percona-server:latest
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: "root_password"
+            - name: MYSQL_USER
+              value: "myuser"
+            - name: MYSQL_PASSWORD
+              value: "mypassword"
+            - name: MYSQL_DATABASE
+              value: "mydb"
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: percona-storage
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: percona-storage
+          persistentVolumeClaim:
+            claimName: percona-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: percona-service
+spec:
+  selector:
+    app: percona
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
+  clusterIP: None  # Для использования в StatefulSet и Persistent Volume

@@ -9,7 +9,6 @@ from rest_framework.test import APITestCase
 class CommentsViewSetTests(APITestCase):
 
     def setUp(self):
-        # Создание пользователя
         username = f"testuser_{uuid.uuid4()}"
         password = 'pass123'
         email = f'testemail_{uuid.uuid4()}@bot.ru'
@@ -19,10 +18,8 @@ class CommentsViewSetTests(APITestCase):
             email=email,
         )
 
-        # Авторизуем пользователя по умолчанию
         self.client.force_authenticate(user=self.user)
 
-        # Создание поста для комментариев
         self.post = Post.objects.create(
             user=self.user,
             file_type="image/jpeg",
@@ -45,7 +42,6 @@ class CommentsViewSetTests(APITestCase):
         self.assertEqual(response.data['user']['username'], self.user.username)
 
     def test_create_nested_comment(self):
-        # Создаем основной комментарий
         data = {
             "post_id": self.post.post_id,
             "content": "This is a parent comment",
@@ -63,16 +59,14 @@ class CommentsViewSetTests(APITestCase):
             nested_comment_data,
         )
 
-        # Проверка успешного создания вложенного комментария
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['content'], "This is a nested comment")
         self.assertEqual(str(response.data['parent_comment_id']), parent_comment_id)
 
     def test_create_comment_with_both_post_and_parent_comment_id(self):
-        # Попытка создания комментария с двумя полями: post_id и parent_comment_id
         data = {
             "post_id": self.post.post_id,
-            "parent_comment_id": uuid.uuid4(),  # Некорректный parent_comment_id
+            "parent_comment_id": uuid.uuid4(),
             "content": "This should fail",
         }
 
@@ -86,14 +80,12 @@ class CommentsViewSetTests(APITestCase):
         )
 
     def test_create_comment_without_post_or_parent_comment(self):
-        # Попытка создания комментария без указания post_id или parent_comment_id
         data = {
             "content": "This should also fail",
         }
 
         response = self.client.post('/api/v1/posts/create/comment/', data)
 
-        # Проверка ошибки
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn(
             'You must provide either post_id or parent_comment_id.',
