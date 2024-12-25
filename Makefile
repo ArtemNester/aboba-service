@@ -3,6 +3,14 @@ run-staging:
 	docker-compose -f docker-compose-staging.yml exec api python manage.py makemigrations
 	docker-compose -f docker-compose-staging.yml exec api python manage.py migrate
 	docker-compose -f docker-compose-staging.yml exec api python manage.py collectstatic --noinput
+	make create-s3-bucket
 
 stop-staging:
 	docker-compose -f docker-compose-staging.yml down -v --remove-orphans
+
+migrations:
+	docker-compose -f docker-compose-staging.yml exec api python manage.py makemigrations
+	docker-compose -f docker-compose-staging.yml exec api python manage.py migrate
+
+create-s3-bucket:
+	python create_bucket.py
