@@ -1,61 +1,41 @@
 from unittest.mock import patch
 
-from aboba.accounts.views import LoginViewSet
-from django.test import (
-    RequestFactory,
-    TransactionTestCase,
-)
+from django.contrib.auth.models import User
+from django.test import TestCase
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.test import APIClient
 
 
-class TestUserLogin(TransactionTestCase):
-    @patch('aboba.accounts.views.LoginViewSet.create')
-    def test_login_user__success(self, mock_create):
-        """Тест успешного логина пользователя"""
-
-        mock_create.return_value = Response(status=status.HTTP_200_OK)
-
-        user_data = {
-            'email': 'aboba@bot.ru',
-            'password': 'password123',
-        }
-
-        factory = RequestFactory()
-
-        request = factory.post(
-            '/api/v1/accounts/login/',
-            user_data,
-            content_type='application/json',
+class LoginViewSetTests(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        User.objects.create_user(
+            username='testuser',
+            email='aboba@bot.ru',
+            password='testpass',
         )
+        super().setUpClass()
 
-        login_view = LoginViewSet.as_view({"post": "create"})
+    def setUp(self):
+        self.client = APIClient()
 
-        response = login_view(request=request)
-
+    @patch('accounts.views.LoginViewSet.create')
+    def test_login_in_user_successfully(self, mock_create):
+        mock_create.return_value = Response(status=status.HTTP_200_OK)
+        response = self.client.post(
+            '/api/v1/accounts/login/',
+            {'email': 'aboba@bot.ru', 'password': 'testpass'},
+            format='json',
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    @patch('aboba.accounts.views.LoginViewSet.create')
-    def test_login_user__error(self, mock_create):
-        """Тест ошибки логина (например, неверный пароль)"""
-
-        mock_create.return_value = Response(status=status.HTTP_400_BAD_REQUEST)
-
-        user_data = {
-            'email': 'aboba@bot.ru',
-            'password': 'wrongpassword',
-        }
-
-        factory = RequestFactory()
-
-        request = factory.post(
+    def test_handles_invalid_login(self):
+        response = self.client.post(
             '/api/v1/accounts/login/',
-            user_data,
-            content_type='application/json',
+            {'email': 'aboba@bot.ru', 'password': 'wrongpass'},
+            format='json',
         )
 
-        login_view = LoginViewSet.as_view({"post": "create"})
-
-        response = login_view(request=request)
-
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('non_field_errors', response.data)

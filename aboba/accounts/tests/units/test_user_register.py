@@ -1,64 +1,59 @@
-from unittest.mock import patch
-
-from aboba.accounts.views import RegisterViewSet
-from django.test import (
-    RequestFactory,
-    TransactionTestCase,
-)
+from django.contrib.auth.models import User
+from django.test import TestCase
 from rest_framework import status
-from rest_framework.response import Response
+from rest_framework.test import APIClient
 
 
-class TestUserRegistration(TransactionTestCase):
+class RegisterViewSetTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
 
-    @patch('aboba.accounts.views.RegisterViewSet.create')
-    def test_register_user__success(self, mock_post):
-        """Test user registration success"""
-
-        mock_post.return_value = Response(status=status.HTTP_201_CREATED)
-
-        user_data = {
-            'email': 'aboba@bot.ru',
-            'password': 'password123',
-            'username': 'aboba',
-        }
-
-        factory = RequestFactory()
-
-        request = factory.post(
+    def test_register_user_successfully(self):
+        response = self.client.post(
             '/api/v1/accounts/register/',
-            user_data,
+            {
+                'username': 'newuser',
+                'email': 'newuser@bot.ru',
+                'password1': 'newpassword',
+                'password2': 'newpassword',
+            },
             format='json',
         )
 
-        register_view = RegisterViewSet.as_view({"post": "create"})
-
-        response = register_view(request=request)
-
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    @patch('aboba.accounts.views.RegisterViewSet.create')
-    def test_register_user__error(self, mock_post):
-        """Test user registration error (e.g., email already exists)"""
+        self.assertIn('access', response.data)
+        self.assertIn('refresh', response.data)
 
-        mock_post.return_value = Response(status=status.HTTP_400_BAD_REQUEST)
+        # Проверяем, что пользователь был создан
+        user = User.objects.get(username='newuser')
+        self.assertEqual(user.email, 'newuser@bot.ru')
 
-        user_data = {
-            'email': 'aboba@bot.ru',
-            'password': 'password123',
-            'username': 'aboba',
-        }
-
-        factory = RequestFactory()
-
-        request = factory.post(
+    def test_register_user_with_missing_fields(self):
+        response = self.client.post(
             '/api/v1/accounts/register/',
-            user_data,
-            content_type='application/json',
+            {
+                'username': 'newuser',
+                'email': 'newuser@bot.ru',
+            },
+            format='json',
         )
 
-        register_view = RegisterViewSet.as_view({"post": "create"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('password1', response.data)
+        self.assertIn('password2', response.data)
 
-        response = register_view(request=request)
+    def test_register_user_with_invalid_email(self):
+        response = self.client.post(
+            '/api/v1/accounts/register/',
+            {
+                'username': 'newuser',
+                'email': 'invalid-email',
+                'password1': 'newpassword',
+                'password2': 'newpassword',
+            },
+            format='json',
+        )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('email', response.data)
